@@ -1,4 +1,5 @@
 import discord
+import requests
 import os
 from dotenv import load_dotenv
 import randfacts as facts
@@ -35,6 +36,11 @@ langKey = "ISO-639 Language Keys:"
 for key in langs:
     langKey = langKey + "\n" + key + ": " +langs.get(key)
 
+async def get_happy_links():
+    url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist"
+    r = requests.get(url)
+    url_list = r.text.splitlines()
+    return(url_list)
 
 @client.event
 async def on_ready():
@@ -142,7 +148,7 @@ async def on_message(message):
         
     if message.content.upper() == "GOOD BOT":
         print("Many happy from " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
-        await message.channel.send(happyLinks[random.randint(0, len(happyLinks))])
+        await message.channel.send(happyLinks[random.randint(0, len(get_happy_links()))])
         return
 
 client.run(discordToken)
