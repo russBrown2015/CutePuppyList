@@ -41,9 +41,8 @@ for key in langs:
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
-    # channel = client.get_channel(botChannel)
-    # await channel.message.send("Your favorite bot is now online")
-    # send message to bot channel when the bot is connected
+    activity = discord.Activity(name=" with your train of thought", type=0)
+    await client.change_presence(activity = activity)
     
 @client.event
 async def on_message(message):
