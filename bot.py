@@ -1,5 +1,4 @@
 import discord
-import requests
 import os
 from dotenv import load_dotenv
 import randfacts as facts
@@ -10,22 +9,24 @@ import urllib
 import re
 import random
 from datetime import datetime as dt
+import requests
 
 load_dotenv()
 discordToken = os.getenv('DISCORD_TOKEN')
 tenorKey = os.getenv('TENOR_API')
 
-happyLinks = ["https://tenor.com/view/dog-happy-miss-you-tail-gif-24314518",
-           "https://tenor.com/view/dog-smile-happy-good-boy-dog-smile-happy-good-boy-gif-21703225",
-           "https://tenor.com/view/excited-dog-happy-gif-15784013",
-           "https://tenor.com/view/smile-excited-woo-shocked-surprised-gif-15991873",
-           "https://tenor.com/view/dogs-welsh-corgi-excited-happy-jumping-gif-18188408",
-           "https://tenor.com/view/happy-dog-cutie-animal-lover-gif-23043263",
-           "https://tenor.com/view/byuntear-dog-dog-smiling-smile-happy-dog-gif-25742762",
-           "https://tenor.com/view/dog-viralhog-pet-tail-wagging-excited-gif-20070867"]
+def get_happy_links():
+    list_url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist"
+    r = requests.get(list_url)
+    if r.status_code == 200:
+        list = r.text.splitlines()
+        return list[random.randint(0, len(list))]
+    else:
+        return None
 
 red = 242409527570333698
 snapdude = 533746229419704332
+russ = 238130863735439361
 
 client = discord.Client()
 
@@ -36,11 +37,6 @@ langKey = "ISO-639 Language Keys:"
 for key in langs:
     langKey = langKey + "\n" + key + ": " +langs.get(key)
 
-async def get_happy_links():
-    url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist"
-    r = requests.get(url)
-    url_list = r.text.splitlines()
-    return(url_list)
 
 @client.event
 async def on_ready():
@@ -148,7 +144,16 @@ async def on_message(message):
         
     if message.content.upper() == "GOOD BOT":
         print("Many happy from " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
-        await message.channel.send(happyLinks[random.randint(0, len(get_happy_links()))])
+        output = get_happy_links()
+        if output != None:
+            await message.channel.send(output)
+        else:
+            await message.channel.send("The github list is broken, it's probably <@" + str(russ)+">'s fault")
         return
+    
+    # if message.content.upper() == "TEST":
+    #     await message.channel.send("testing mentions <@"+str(red)+">'s")
+        
+# good bot returns dog wagging tail gif
 
 client.run(discordToken)
