@@ -43,6 +43,9 @@ async def on_ready():
     print(f'{client.user} has connected to Discord!')
     activity = discord.Activity(name=" with your train of thought", type=0)
     await client.change_presence(activity = activity)
+    # channel = client.get_channel(botChannel)
+    # await channel.message.send("Your favorite bot is now online")
+    # send message to bot channel when the bot is connected
     
 @client.event
 async def on_message(message):
@@ -114,7 +117,8 @@ async def on_message(message):
         
         if len(message.content.split(" ")) > 5:
             if random.randrange(0,100) > 30:
-                continueAsking = True
+                await message.channel.send("How does that really make you feel " + message.author.mention +"?")
+                return
         else:
             continueAsking = True
                     
@@ -156,3 +160,4 @@ async def on_message(message):
 # good bot returns dog wagging tail gif
 
 client.run(discordToken)
+
