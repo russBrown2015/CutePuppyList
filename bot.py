@@ -126,7 +126,7 @@ async def on_message(message):
             print("Skipping asking for more information")
             return
         else:  
-            if message.content.upper() == "FUCK":
+            if len(re.findall("FUCK\w*",message.content.upper()))>0 and len(re.findall("\\\FUCK\w*",message.content.upper())) == 0:
                 print("Insulting " + user + " on " + str(server) + "." + str(textChannel) + " at " + str(currentTime))
                 await message.channel.send("I wouldn't even fuck " + message.author.mention + " for practice.")
                 return
