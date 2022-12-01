@@ -14,13 +14,18 @@ import requests
 load_dotenv()
 discordToken = os.getenv('DISCORD_TOKEN')
 tenorKey = os.getenv('TENOR_API')
+happy_url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist_happy"
+sassy_url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist_sassy"
 
-def get_happy_links():
-    list_url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist"
-    r = requests.get(list_url)
+def get_gif_links(mood):
+    if mood == "HAPPY":
+        r = requests.get(happy_url)
+    elif mood == "SASSY":
+        r = requests.get(sassy_url)
+        
     if r.status_code == 200:
         list = r.text.splitlines()
-        return list[random.randint(0, len(list))]
+        return list[random.randint(0, len(list)-1)]
     else:
         return None
 
@@ -112,7 +117,7 @@ async def on_message(message):
         await message.channel.send("Reminder: *Taxation is theft*!", reference = message)
         return
         
-    if len(re.findall("FUCK\w*",message.content.upper()))>0:
+    if len(re.findall("FUCK\w*",message.content.upper()))>0 and len(re.findall("\\\FUCK\w*",message.content.upper())) == 0:
         continueAsking = False
         
         if len(message.content.split(" ")) > 5:
@@ -126,8 +131,8 @@ async def on_message(message):
             print("Skipping asking for more information")
             return
         else:  
-            if len(re.findall("FUCK\w*",message.content.upper()))>0 and len(re.findall("\\\FUCK\w*",message.content.upper())) == 0:
-                print("Insulting " + user + " on " + str(server) + "." + str(textChannel) + " at " + str(currentTime))
+            if message.content.upper() == "FUCK":
+                print("Insulting " + str(user) + " on " + str(server) + "." + str(textChannel) + " at " + str(currentTime))
                 await message.channel.send("I wouldn't even fuck " + message.author.mention + " for practice.")
                 return
             else:
@@ -147,11 +152,20 @@ async def on_message(message):
         
     if message.content.upper() == "GOOD BOT":
         print("Many happy from " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
-        output = get_happy_links()
+        output = get_gif_links("HAPPY")
         if output != None:
             await message.channel.send(output)
         else:
             await message.channel.send("The github list is broken, it's probably <@" + str(russ)+">'s fault")
+        return
+    
+    if message.content.upper() == "BAD BOT":
+        print("Oh no they didnt! " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
+        output = get_gif_links("SASSY")
+        if output != None:
+            await message.channel.send(output)
+        else:
+            await message.channel.send("The github list is broken, it's probably <@" + str(red)+">'s fault")
         return
     
     # if message.content.upper() == "TEST":
@@ -160,4 +174,3 @@ async def on_message(message):
 # good bot returns dog wagging tail gif
 
 client.run(discordToken)
-
