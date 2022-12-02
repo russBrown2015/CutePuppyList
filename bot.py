@@ -121,7 +121,7 @@ async def on_message(message):
         continueAsking = False
         
         if len(message.content.split(" ")) > 5:
-            if random.randrange(0,100) > 30:
+            if random.randrange(0,100) < 30:
                 await message.channel.send("How does that really make you feel " + message.author.mention +"?")
                 return
         else:
