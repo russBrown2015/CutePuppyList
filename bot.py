@@ -117,7 +117,7 @@ async def on_message(message):
         await message.channel.send("Reminder: *Taxation is theft*!", reference = message)
         return
     
-    if "BILLONARIES " in message.content.upper():
+    if len(re.findall("BILLIONAIRE[S]?",message.content.upper())) > 0:
         print("sending billionaires reminder to " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
         await message.channel.send("EAT THE RICH!", reference = message)
         return
