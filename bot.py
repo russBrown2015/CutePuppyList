@@ -116,19 +116,25 @@ async def on_message(message):
         print("sending taxation reminder to " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
         await message.channel.send("Reminder: *Taxation is theft*!", reference = message)
         return
+    
+    if "BILLONARIES " in message.content.upper():
+        print("sending billionaires reminder to " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
+        await message.channel.send("EAT THE RICH!", reference = message)
+        return
         
     if len(re.findall("FUCK\w*",message.content.upper()))>0 and len(re.findall("\\\FUCK\w*",message.content.upper())) == 0:
         continueAsking = False
         
         if len(message.content.split(" ")) > 5:
-            if random.randrange(0,100) < 30:
+            chance = random.randrange(0,100)
+            if chance < 30:
                 await message.channel.send("How does that really make you feel " + message.author.mention +"?")
                 return
         else:
             continueAsking = True
                     
         if continueAsking == False:
-            print("Skipping asking for more information")
+            print("Skipping asking for more information on " + str(server) + "." + str(textChannel) + " with " + str(chance) +"\100 chance.")
             return
         else:  
             if message.content.upper() == "FUCK":
@@ -171,6 +177,5 @@ async def on_message(message):
     # if message.content.upper() == "TEST":
     #     await message.channel.send("testing mentions <@"+str(red)+">'s")
         
-# good bot returns dog wagging tail gif
 
 client.run(discordToken)
