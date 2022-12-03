@@ -16,6 +16,7 @@ discordToken = os.getenv('DISCORD_TOKEN')
 tenorKey = os.getenv('TENOR_API')
 happy_url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist_happy"
 sassy_url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist_sassy"
+skip_url = "https://raw.githubusercontent.com/russBrown2015/CutePuppyList/main/masterlist_dont_annoy"
 
 def get_gif_links(mood):
     if mood == "HAPPY":
@@ -42,7 +43,6 @@ langKey = "ISO-639 Language Keys:"
 for key in langs:
     langKey = langKey + "\n" + key + ": " +langs.get(key)
 
-
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
@@ -63,7 +63,8 @@ async def on_message(message):
     textChannel = message.channel
     currentTime = dt.now()
     
-       
+
+# Random Facts
     if message.content.upper() == "!FACTS":
         print("Sending Facts to " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
         await message.channel.send("Here's a random fact for you!\n"+facts.get_fact(), reference = message)
@@ -111,30 +112,43 @@ async def on_message(message):
             await message.channel.send("Here's your Translation: " + translation, reference = message)
         
         return   
-    
+# Tax
     if "TAX" in message.content.upper():
         print("sending taxation reminder to " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
         await message.channel.send("Reminder: *Taxation is theft*!", reference = message)
         return
     
+# Billionaires
     if len(re.findall("BILLIONAIRE[S]?",message.content.upper())) > 0:
         print("sending billionaires reminder to " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
         await message.channel.send("EAT THE RICH!", reference = message)
         return
         
+# Fuck
     if len(re.findall("FUCK\w*",message.content.upper()))>0 and len(re.findall("\\\FUCK\w*",message.content.upper())) == 0:
         continueAsking = False
+        chance = random.randrange(0,100)
+        maxChance = 30
+        
+        try:
+            quiet_users = requests.get(skip_url).text
+        except:
+            quiet_users = None
+        
+        if quiet_users != None and str(message.author.id) in quiet_users:
+            maxChance = 5
         
         if len(message.content.split(" ")) > 5:
-            chance = random.randrange(0,100)
-            if chance < 30:
+            
+            if chance <= maxChance:
+                print("asking for more information on " + str(server) + "." + str(textChannel) + " at " + str(currentTime))
                 await message.channel.send("How does that really make you feel " + message.author.mention +"?")
                 return
         else:
             continueAsking = True
                     
-        if continueAsking == False:
-            print("Skipping asking for more information on " + str(server) + "." + str(textChannel) + " with " + str(chance) +"\100 chance.")
+        if continueAsking == False or (str(message.author.id) in quiet_users and chance > maxChance):
+            print("Skipping asking for more information on " + str(server) + "." + str(textChannel) + " with " + str(chance) +"/100. Max Acceptable: " + str(maxChance))
             return
         else:  
             if message.content.upper() == "FUCK":
@@ -156,6 +170,7 @@ async def on_message(message):
                 await message.channel.send("Tell us more about" + aboutStr + " " + message.author.mention)
                 return
         
+# Good bot
     if message.content.upper() == "GOOD BOT":
         print("Many happy from " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
         output = get_gif_links("HAPPY")
@@ -165,6 +180,7 @@ async def on_message(message):
             await message.channel.send("The github list is broken, it's probably <@" + str(russ)+">'s fault")
         return
     
+# Bad bot
     if message.content.upper() == "BAD BOT":
         print("Oh no they didnt! " + str(server)+"."+str(textChannel)+" at " + str(currentTime))
         output = get_gif_links("SASSY")
@@ -174,8 +190,11 @@ async def on_message(message):
             await message.channel.send("The github list is broken, it's probably <@" + str(red)+">'s fault")
         return
     
-    # if message.content.upper() == "TEST":
-    #     await message.channel.send("testing mentions <@"+str(red)+">'s")
+#Testing
+    if message.content.upper() == "TEST":
+        r = requests.get(skip_url)
+        users = r.text
+        print(str(message.author.id) in users)
         
 
 client.run(discordToken)
